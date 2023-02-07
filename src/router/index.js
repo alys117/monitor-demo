@@ -46,7 +46,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/monitor/index',
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
@@ -86,6 +86,28 @@ export const constantRoutes = [
         name: 'Form',
         component: () => import('@/views/form/index'),
         meta: { title: 'Form', icon: 'form' }
+      }
+    ]
+  },
+
+  {
+    path: '/monitor',
+    component: Layout,
+    redirect: '/monitor/index',
+    name: 'Father',
+    meta: { title: 'Father', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'index',
+        name: 'Monitor',
+        component: () => import('@/views/monitor/index'),
+        meta: { title: 'monitor', icon: 'form' }
+      },
+      {
+        path: 'test',
+        name: 'Test',
+        component: () => import('@/views/monitor/test'),
+        meta: { title: 'test', icon: 'form' }
       }
     ]
   },
