@@ -8,10 +8,31 @@
       <div class="front" :style="frontLineVar">
         <div />
       </div>
-      <el-tooltip placement="bottom" effect="light">
-        <div slot="content">多行信息<br/>第二行信息第二行信息第二行信息第二行信息第二行信息第二行信息</div>
-        <div :class="circleType?circleType:'circle'" :style="pointVar" />
-      </el-tooltip>
+      <div :ref="here" class="tip-container">
+        <el-tooltip :ref="here+'_inner'" placement="bottom" effect="light" popper-class="my-tooltip" :append-to-body="false">
+          <div slot="content" style="width: 600px">
+            <el-table
+              :header-cell-style="{background:'rgba(240, 245, 255, 1)'}"
+              :data="tableData"
+              style="width: 100%">
+              <el-table-column
+                prop="date"
+                label="日期">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="姓名"
+                width="80">
+              </el-table-column>
+              <el-table-column
+                prop="address"
+                label="地址">
+              </el-table-column>
+            </el-table>
+          </div>
+          <div :class="circleType?circleType:'circle'" :style="pointVar" />
+        </el-tooltip>
+      </div>
       <div class="end" :style="endLineVar">
         <div />
       </div>
@@ -46,6 +67,35 @@ export default {
       }
       return _site
     }
+  },
+  data() {
+    return {
+      here: 'a_' + Math.random(),
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }]
+    }
+  },
+  mounted() {
+    // 在mounted的时候只需要使用这句话。
+    this.$refs[this.here].appendChild(
+      this.$refs[this.here + '_inner'].popperVM.$el
+    )
+    console.log(this.here)
   }
 }
 </script>
@@ -98,5 +148,25 @@ export default {
   font-size: 12px;
   margin: 0;
   padding: 0;
+}
+</style>
+<style scoped>
+.my-tooltip div{
+    color: rgba(56, 56, 56, 1);
+}
+::v-deep .my-tooltip.el-tooltip__popper {
+  border: 1px solid rgba(229, 229, 229, 1); /* el-tooltip 弹出层边框的颜色 */
+}
+::v-deep .my-tooltip.el-tooltip__popper[x-placement^=bottom] .popper__arrow {
+  border-bottom-color: rgba(229, 229, 229, 1); /* el-tooltip 弹出层小箭头的颜色 */
+}
+</style>
+<style>
+.el-table{
+  border: 1px solid rgba(229, 229, 229, 1);
+  border-collapse: collapse;
+}
+.el-table td, .el-table th {
+  padding: 2px;
 }
 </style>

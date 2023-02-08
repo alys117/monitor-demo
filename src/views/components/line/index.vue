@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'Line',
+  name: 'LinkLine',
   props: ['color']
 }
 </script>
