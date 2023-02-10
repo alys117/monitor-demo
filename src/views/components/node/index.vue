@@ -1,46 +1,52 @@
 <template>
-  <div class="container">
-    <div class="head">
-      <p>申请单入库</p>
-      <p>{{ content1 }}</p>
-    </div>
-    <div style="display: flex;align-items:center;justify-content: center;height: 50px">
-      <div class="front" :style="frontLineVar">
-        <div />
+  <div style="display: flex;align-items: center">
+    <div class="front-line" :style="frontLineVar" />
+    <div class="point-container">
+      <div class="head">
+        <p>申请单入库</p>
+        <p>{{ content1 }}</p>
       </div>
-      <div :ref="here" class="tip-container">
-        <el-tooltip :ref="here+'_inner'" placement="bottom" effect="light" popper-class="my-tooltip" :append-to-body="false">
-          <div slot="content" style="width: 600px">
-            <el-table
-              :header-cell-style="{background:'rgba(240, 245, 255, 1)'}"
-              :data="tableData"
-              style="width: 100%">
-              <el-table-column
-                prop="date"
-                label="日期">
-              </el-table-column>
-              <el-table-column
-                prop="name"
-                label="姓名"
-                width="80">
-              </el-table-column>
-              <el-table-column
-                prop="address"
-                label="地址">
-              </el-table-column>
-            </el-table>
-          </div>
-          <div :class="circleType?circleType:'circle'" :style="pointVar" />
-        </el-tooltip>
+      <div style="display: flex;align-items:center;justify-content: center;height: 50px">
+        <div class="front" :style="frontLineVar">
+          <div />
+        </div>
+        <div :ref="here" class="tip-container">
+          <el-tooltip :ref="here+'_inner'" placement="bottom" effect="light" popper-class="my-tooltip" :append-to-body="false">
+            <div slot="content" style="width: 600px;height: 150px">
+              <el-table
+                :ref="here+'_table'"
+                :header-cell-style="{background:'rgba(240, 245, 255, 1)'}"
+                :data="tableData"
+                style="width: 100%"
+              >
+                <el-table-column
+                  prop="date"
+                  label="日期"
+                />
+                <el-table-column
+                  prop="name"
+                  label="姓名"
+                  width="80"
+                />
+                <el-table-column
+                  prop="address"
+                  label="地址"
+                />
+              </el-table>
+            </div>
+            <div :class="circleType?circleType:'circle'" :style="pointVar" />
+          </el-tooltip>
+        </div>
+        <div class="end" :style="endLineVar">
+          <div />
+        </div>
       </div>
-      <div class="end" :style="endLineVar">
-        <div />
+      <div class="foot">
+        <p>耗时：03:01</p>
+        <p>xxxxxxxxxx和打发第三方佛挡杀佛撒</p>
       </div>
     </div>
-    <div class="foot">
-      <p>耗时：03:01</p>
-      <p>xxxxxxxxxx和打发第三方佛挡杀佛撒</p>
-    </div>
+    <div class="end-line" :style="endLineVar" />
   </div>
 </template>
 
@@ -48,26 +54,6 @@
 export default {
   name: 'Node',
   props: ['content1', 'circleType', 'circleColor', 'frontLineColor', 'endLineColor'],
-  computed: {
-    pointVar() {
-      const _site = {
-        '--circleColor': this.circleColor
-      }
-      return _site
-    },
-    frontLineVar() {
-      const _site = {
-        '--frontLineColor': this.frontLineColor
-      }
-      return _site
-    },
-    endLineVar() {
-      const _site = {
-        '--endLineColor': this.endLineColor
-      }
-      return _site
-    }
-  },
   data() {
     return {
       here: 'a_' + Math.random(),
@@ -90,18 +76,45 @@ export default {
       }]
     }
   },
+  computed: {
+    pointVar() {
+      const _site = {
+        '--circleColor': this.circleColor
+      }
+      return _site
+    },
+    frontLineVar() {
+      const _site = {
+        '--frontLineColor': this.frontLineColor
+      }
+      return _site
+    },
+    endLineVar() {
+      const _site = {
+        '--endLineColor': this.endLineColor
+      }
+      return _site
+    }
+  },
   mounted() {
     // 在mounted的时候只需要使用这句话。
     this.$refs[this.here].appendChild(
       this.$refs[this.here + '_inner'].popperVM.$el
     )
-    console.log(this.here)
+    // console.log(this.here)
+
+    // const height2 = window.getComputedStyle(this.$refs[this.here + '_inner']).height
+    this.$nextTick(() => {
+      const height = this.$refs[this.here + '_table'].$el
+
+      console.log(height)
+    })
   }
 }
 </script>
 
 <style scoped>
-.container{
+.point-container{
   width: 100px;
   height: 180px;
   display: flex;
@@ -143,6 +156,16 @@ export default {
   height: 3px;
   background-color: var(--endLineColor, black);
 }
+.front-line{
+  width: 30px;
+  background-color: var(--frontLineColor, black);
+  height: 3px
+}
+.end-line{
+  width: 30px;
+  background-color: var(--endLineColor, black);
+  height: 3px
+}
 .head p, .foot p{
   text-align: center;
   font-size: 12px;
@@ -159,6 +182,9 @@ export default {
 }
 ::v-deep .my-tooltip.el-tooltip__popper[x-placement^=bottom] .popper__arrow {
   border-bottom-color: rgba(229, 229, 229, 1); /* el-tooltip 弹出层小箭头的颜色 */
+}
+::v-deep .my-tooltip.el-tooltip__popper[x-placement^=top] .popper__arrow {
+  border-top-color: rgba(229, 229, 229, 1);
 }
 </style>
 <style>
