@@ -1,62 +1,38 @@
 <template>
   <div style="display: flex;align-items: center">
-    <div class="front-line" :style="frontLineVar" />
     <div class="point-container">
-      <div class="head">
-        <p>申请单入库</p>
-        <p>{{ content1 }}</p>
-      </div>
-      <div style="display: flex;align-items:center;justify-content: center;height: 50px">
-        <div class="front" :style="frontLineVar">
-          <div />
-        </div>
-        <div :ref="here" class="tip-container">
-          <el-tooltip :ref="here+'_inner'" placement="bottom" effect="light" popper-class="my-tooltip" :append-to-body="false">
-            <div slot="content" style="width: 600px;height: 150px">
-              <el-table
-                :ref="here+'_table'"
-                :header-cell-style="{background:'rgba(240, 245, 255, 1)'}"
-                :data="tableData"
-                style="width: 100%"
-              >
-                <el-table-column
-                  prop="date"
-                  label="日期"
-                />
-                <el-table-column
-                  prop="name"
-                  label="姓名"
-                  width="80"
-                />
-                <el-table-column
-                  prop="address"
-                  label="地址"
-                />
-              </el-table>
-            </div>
-            <div :class="circleType?circleType:'circle'" :style="pointVar" />
-          </el-tooltip>
-        </div>
-        <div class="end" :style="endLineVar">
-          <div />
-        </div>
-      </div>
-      <div class="foot">
-        <p>耗时：03:01</p>
-        <p>xxxxxxxxxx和打发第三方佛挡杀佛撒</p>
+      <div style="display: flex;align-items:center;justify-content: center;height: 50px" />
+      <div class="tip-container">
+        <el-popover placement="bottom" popper-class="my-tooltip" trigger="click">
+          <div style="width: 600px;height: 150px; background-color: #5a5e66">
+            123123123123中文
+          </div>
+          <div slot="reference" :class="circleType?circleType:'circle'" :style="pointVar" />
+        </el-popover >
+        <el-popover
+          v-scoped="this"
+          transition="abc"
+          placement="bottom"
+          title="标题"
+          trigger="click"
+        >
+          <div style="width: 600px;height: 150px; background-color: #5a5e66">
+            123123123123中文
+          </div>
+          <br>
+          <div slot="reference">click 激活</div>
+        </el-popover>
       </div>
     </div>
-    <div class="end-line" :style="endLineVar" />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Node',
+  name: 'Node2',
   props: ['content1', 'circleType', 'circleColor', 'frontLineColor', 'endLineColor'],
   data() {
     return {
-      here: 'a_' + Math.random(),
       tableData: [{
         date: '2016-05-02',
         name: '王小虎',
@@ -97,18 +73,6 @@ export default {
     }
   },
   mounted() {
-    // 在mounted的时候只需要使用这句话。
-    this.$refs[this.here].appendChild(
-      this.$refs[this.here + '_inner'].popperVM.$el
-    )
-    // console.log(this.here)
-
-    // const height2 = window.getComputedStyle(this.$refs[this.here + '_inner']).height
-    this.$nextTick(() => {
-      const height = this.$refs[this.here + '_table'].$el
-
-      // console.log(height)
-    })
   }
 }
 </script>
@@ -194,5 +158,14 @@ export default {
 }
 .el-table td, .el-table th {
   padding: 2px;
+}
+</style>
+<style scoped>
+.abc-enter-active, .abc-leave-active {
+  transition: all .3s;
+}
+.abc-enter, .abc-leave-to {
+  opacity: 0;
+  transform: translate(-50px, -50px) scale(0.3);
 }
 </style>
