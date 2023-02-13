@@ -28,7 +28,7 @@
         </div>
         <div>
           <p>剩余时间：</p>
-          <Countdown></Countdown>
+          <Countdown :end="deadline" />
         </div>
       </div>
     </div>
@@ -38,41 +38,14 @@
         <el-button type="primary" size="mini">返回</el-button>
       </div>
       <div style="width: 980px;">
-        <div style="display: flex;">
-          <div style="height: 180px;width: 90px" />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="rgba(0,0,0,0)" end-line-color="skyblue" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="" end-line-color="orange" />
-          <top-right />
-        </div>
-        <div style="display: flex;flex-direction: row-reverse">
-          <bottom-right />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="" end-line-color="orange" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="" end-line-color="orange" />
-          <top-left />
-        </div>
-        <div style="display: flex">
-          <bottom-left />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="" end-line-color="orange" />
-          <node content1="这文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一段文文这是一段文文这是一段文文" />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="" end-line-color="orange" />
-          <top-right />
-        </div>
-        <div style="display: flex;flex-direction: row-reverse">
-          <bottom-right />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="" end-line-color="orange" />
-          <node content1="这是一段文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文文这是一段文文这是一段文文" />
-          <node content1="这是一段文文这是一文这是一段文文这是一段文文" />
-          <node circle-type="circle-shadow" circle-color="blue" front-line-color="rgba(0,0,0,0)" end-line-color="" />
-          <top-right v-if="false" />
+        <div v-for="(idx,index) in group" :key="index">
+          <div :class="index%2 === 0?'flex':'flex-row-reverse'">
+            <bottom-left v-if="index%2 ===0 " :color="index === 0 ? 'rgba(0,0,0,0)': flow[idx[0]].frontLineColor" />
+            <bottom-right v-if="index%2 !==0 " :color="index === 0 ? 'rgba(0,0,0,0)': flow[idx[0]].frontLineColor" />
+            <node v-for="i in idx" :key="i" :base-info="flow[i]" />
+            <top-right v-if="index%2 === 0" :color="index === group.length-1 ? 'rgba(0,0,0,0)': flow[idx.slice(-1)].endLineColor" />
+            <top-left v-if="index%2 !== 0" :color="index === group.length-1 ? 'rgba(0,0,0,0)': flow[idx.slice(-1)].endLineColor" />
+          </div>
         </div>
       </div>
     </div>
@@ -87,46 +60,174 @@ import bottomRight from '@/views/components/quarter-circle/bottom-right.vue'
 import TopLeft from '@/views/components/quarter-circle/top-left.vue'
 import BottomLeft from '@/views/components/quarter-circle/bottom-left.vue'
 import Countdown from '@/views/components/countdown/index.vue'
+import result from '@/views/result.json'
 export default {
   name: 'Index',
   components: { Legend, Node, TopRight, bottomRight, TopLeft, BottomLeft, Countdown },
-  methods: {
-    hilarity() {
-      this.$notify({
-        title: '提示',
-        message: '时间已到，你可知寸金难买寸光阴？',
-        duration: 0
-      })
-    }
-  },
   data() {
     return {
       deadline: Date.now() + 1000 * 60 * 60 * 8,
-      activities: [{
-        content: '支持使用图标',
-        timestamp: '2018-04-12 20:46',
-        size: 'large',
-        type: 'primary',
-        icon: 'el-icon-circle-check'
-      }, {
-        content: '支持自定义颜色',
-        timestamp: '2018-04-03 20:46',
-        icon: 'el-icon-circle-check',
-        size: 'large',
-        color: '#0bbd87'
-      }, {
-        content: '支持自定义尺寸',
-        timestamp: '2018-04-03 20:46',
-        icon: 'el-icon-circle-check',
-        size: 'large'
-      }, {
-        content: '默认样式的节点',
-        icon: 'el-icon-circle-check',
-        size: 'large',
-        timestamp: '2018-04-03 20:46'
-      }]
+      activities: [
+        {
+          content: '支持使用图标',
+          timestamp: '2018-04-12 20:46',
+          size: 'large',
+          type: 'primary',
+          icon: 'el-icon-circle-check'
+        }, {
+          content: '支持自定义颜色',
+          timestamp: '2018-04-03 20:46',
+          icon: 'el-icon-circle-check',
+          size: 'large',
+          color: '#0bbd87'
+        }, {
+          content: '支持自定义尺寸',
+          timestamp: '2018-04-03 20:46',
+          icon: 'el-icon-circle-check',
+          size: 'large'
+        }, {
+          content: '默认样式的节点',
+          icon: 'el-icon-circle-check',
+          size: 'large',
+          timestamp: '2018-04-03 20:46'
+        }
+      ],
+      flow: result,
+      group: [],
+      flow1: [
+        {
+          direction: 'normal',
+          content1: '支持使用图标',
+          content2: '支持使用图标',
+          circleType: 'circle',
+          nodeType: 'start',
+          circleColor: '#f56c6c',
+          frontLineColor: '#f56c6c',
+          endLineColor: '#e1e2fc',
+          popovers: [
+            {
+              title: '标题1:xxxx申请单',
+              gridData: [
+                {
+                  '姓名': '张三',
+                  '年龄': 18
+                },
+                {
+                  '姓名': '李四',
+                  '年龄': 52
+                }
+              ]
+            },
+            {
+              title: '标题2: 一段描述',
+              gridData: [
+                {
+                  '自定义1': '张三1',
+                  '自定义2': '张三2',
+                  'custom1': 18
+                },
+                {
+                  '自定义1': '李四',
+                  '自定义2': '李四2',
+                  'custom1': 52
+                }
+              ]
+            }
+          ]
+        },
+        {
+          direction: 'normal',
+          content1: '支持使用图标',
+          content2: '支持使用图标',
+          circleType: 'circle',
+          nodeType: 'process',
+          circleColor: '#f56c6c',
+          frontLineColor: '#f56c6c',
+          endLineColor: '#e1e2fc',
+          popovers: [
+            {
+              title: '标题1:xxxx申请单',
+              gridData: [
+                {
+                  '姓名': '张三',
+                  '年龄': 18
+                },
+                {
+                  '姓名': '李四',
+                  '年龄': 52
+                }
+              ]
+            },
+            {
+              title: '标题2: 一段描述',
+              gridData: [
+                {
+                  '自定义1': '张三1',
+                  '自定义2': '张三2',
+                  'custom1': 18
+                },
+                {
+                  '自定义1': '李四',
+                  '自定义2': '李四2',
+                  'custom1': 52
+                }
+              ]
+            }
+          ]
+        },
+        {
+          direction: 'reverse',
+          content1: '支持使用图标',
+          content2: '支持使用图标',
+          circleType: 'circle-shadow',
+          nodeType: 'end',
+          circleColor: '#f56c6c',
+          frontLineColor: '#f56c6c',
+          endLineColor: '#e1e2fc',
+          popovers: [
+            {
+              title: '标题1:xxxx申请单',
+              gridData: [
+                {
+                  '姓名': '张三',
+                  '年龄': 18
+                },
+                {
+                  '姓名': '李四',
+                  '年龄': 52
+                }
+              ]
+            },
+            {
+              title: '标题2: 一段描述',
+              gridData: [
+                {
+                  '自定义1': '张三1',
+                  '自定义2': '张三2',
+                  'custom1': 18
+                },
+                {
+                  '自定义1': '李四',
+                  '自定义2': '李四2',
+                  'custom1': 52
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
-  }
+  },
+  mounted() {
+    for (let i = 0; i < this.flow.length; i++) {
+      if (!this.group[Math.floor(i / 5)]) {
+        this.group[Math.floor(i / 5)] = []
+      }
+      this.group[Math.floor(i / 5)][i % 5] = i
+    }
+    console.log(this.group, 111111)
+  },
+  methods: {}
 }
 </script>
 

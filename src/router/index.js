@@ -110,6 +110,12 @@ export const constantRoutes = [
         meta: { title: 'test', icon: 'form' }
       },
       {
+        path: 'dynamic',
+        name: 'Dynamic',
+        component: () => import('@/views/monitor/dynamic-table'),
+        meta: { title: '动态表格', icon: 'form' }
+      },
+      {
         path: 'test2',
         name: 'Test2',
         component: () => import('@/views/monitor/test2'),
