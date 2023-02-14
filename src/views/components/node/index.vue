@@ -3,7 +3,7 @@
     <div class="front-line" :style="frontLineVar" />
     <div class="point-container">
       <div class="head">
-        <p>{{ baseInfo.content1 }}</p>
+        <p v-html="baseInfo.content1"></p>
       </div>
       <div style="user-select: none;display: flex;align-items:center;justify-content: center;height: 50px">
         <div class="front" :style="frontLineVar">
@@ -16,13 +16,19 @@
             transition="abc"
             trigger="click"
           >
-            <div slot="reference" :class="baseInfo.circleType?baseInfo.circleType:'circle'" :style="pointVar" />
+            <div slot="reference" :class="baseInfo.status === 'error' || baseInfo.status === 'running' ? 'circle-shadow' :'circle'" :style="pointVar" />
             <div v-for="it in baseInfo.popovers" :key="it.title">
               <div class="flex-space-between">
-                <p style="padding: 0;margin: 5px 0">{{ it.title }}</p>
-                <p style="padding: 0;margin: 5px 0">{{ it.title2 }}</p>
+                <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.title }}</p>
+                <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.title2 }}</p>
               </div>
-              <el-table ref="myTable" :data="it.tableData" :header-cell-style="{background:'rgba(240, 245, 255, 1)'}" style="width: 100%">
+              <el-table
+                ref="myTable"
+                :data="it.tableData"
+                :cell-style="{'text-align':'center',color:'rgba(56, 56, 56, 1)'}"
+                :header-cell-style="{background:'rgba(240, 245, 255, 1)','text-align':'center',color: 'rgba(128, 128, 128, 1)', 'font-weight':'normal'}"
+                style="width: 100%"
+              >
                 <!-- 动态列 -->
                 <el-table-column
                   v-for="(item, index) in it.dynamicColumns"
@@ -31,7 +37,7 @@
                   :width="flexColumnWidth(item.label,item.prop, it.tableData)"
                 >
                   <template slot="header">
-                    {{ item.label }}
+                    <span>{{ item.label }}</span>
                   </template>
                   <template slot-scope="scope">
                     <span>{{ scope.row[item.prop] }}</span>
@@ -121,7 +127,18 @@ export default {
   },
   computed: {
     pointVar() {
-      return { '--circleColor': this.baseInfo.circleColor }
+      // return { '--circleColor': this.baseInfo.circleColor }
+      if (this.baseInfo.status === 'success') {
+        return { '--circleColor': 'rgba(42, 130, 228, 1)' }
+      } else if (this.baseInfo.status === 'running') {
+        return { '--circleColor': 'rgba(67, 207, 124, 1)' }
+      } else if (this.baseInfo.status === 'error') {
+        return { '--circleColor': 'rgba(255, 87, 51, 1)' }
+      } else if (this.baseInfo.status === 'not-running') {
+        return { '--circleColor': 'rgba(128, 128, 128, 1)' }
+      } else {
+        return { '--circleColor': 'rgba(0, 0, 0, 1)' }
+      }
     },
     frontLineVar() {
       if (this.baseInfo.nodeType === 'start') {
@@ -218,10 +235,23 @@ export default {
 .head, .foot{
   height: 50px;
 }
+.head p, .foot p{
+  line-height: 18px;
+  text-align: center;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+}
+.head p, .foot p{
+  text-align: center;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+}
 .circle{
   width: 18px;
   height: 18px;
-  background-color: red;
+  background-color: var(--circleColor, red);
   border-radius: 50%;
   cursor: pointer;
 }
@@ -262,12 +292,6 @@ export default {
   background-color: var(--endLineColor, black);
   height: 3px
 }
-.head p, .foot p{
-  text-align: center;
-  font-size: 12px;
-  margin: 0;
-  padding: 0;
-}
 </style>
 <style scoped>
 .my-tooltip div{
@@ -283,13 +307,21 @@ export default {
   border-top-color: rgba(229, 229, 229, 1);
 }
 </style>
-<style>
-.el-table{
+<style scoped>
+::v-deep .el-table{
   border: 1px solid rgba(229, 229, 229, 1);
-  border-collapse: collapse;
 }
-.el-table td, .el-table th {
+::v-deep .el-table td,::v-deep .el-table th {
   padding: 2px;
+}
+::v-deep .el-table td, ::v-deep .el-table th.is-leaf {
+  /* 去除网格和上边框 */
+   border: none;
+}
+::v-deep .el-table::before{
+  /* 去除下边框, 下面两种选一种即可 */
+  height: 0;
+  /*background-color: rgba(0,0,0,0);*/
 }
 </style>
 <style scoped>

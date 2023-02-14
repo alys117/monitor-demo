@@ -104,6 +104,12 @@ export const constantRoutes = [
         meta: { title: 'monitor', icon: 'form' }
       },
       {
+        path: 'task',
+        name: 'Task',
+        component: () => import('@/views/monitor/task'),
+        meta: { title: 'task', icon: 'form' }
+      },
+      {
         path: 'test',
         name: 'Test',
         component: () => import('@/views/monitor/test'),

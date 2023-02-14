@@ -19,7 +19,7 @@ export default {
   props: {
     end: {
       type: Number,
-      default: new Date().getTime()
+      default: 0
     }
   },
   data() {
@@ -35,8 +35,12 @@ export default {
     colored() {
       if (this.hr_ === '--') {
         return `rgba(0, 0, 0, 1)`
+      } else if (this.hr_ < 1 && this.min < 30) {
+        return `rgba(255, 87, 51, 1)`
+      } else if (this.hr_ < 1 && this.min > 30) {
+        return `rgba(255, 141, 26, 1)`
       } else {
-        return this.hr_ < 3 ? `rgba(255, 87, 51, 1)` : (this.hr_ < 6 ? `rgba(255, 141, 26, 1)` : `rgba(42, 130, 228, 1)`)
+        return `rgba(42, 130, 228, 1)`
       }
     }
   },
