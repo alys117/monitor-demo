@@ -220,12 +220,15 @@ export default {
     }
   },
   mounted() {
+    const tmp = []
     for (let i = 0; i < this.flow.length; i++) {
-      if (!this.group[Math.floor(i / 5)]) {
-        this.group[Math.floor(i / 5)] = []
+      if (!tmp[Math.floor(i / 5)]) {
+        tmp[Math.floor(i / 5)] = []
       }
-      this.group[Math.floor(i / 5)][i % 5] = i
+      tmp[Math.floor(i / 5)][i % 5] = i
     }
+    this.group = tmp
+    // this.$forceUpdate() // 重新渲染
   },
   methods: {}
 }

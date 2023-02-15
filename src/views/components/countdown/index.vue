@@ -98,6 +98,7 @@ export default {
 
 <style scoped>
 .countdown .time{
+  --color: rgba(0, 0, 0, 1);
   font-size: 24px;
   color: var(--color);
   font-weight: 600;
@@ -105,7 +106,8 @@ export default {
   gap: 20px
 }
 .countdown .text{
+  --width: 38px;
   text-align: center;
-  width: 38px
+  width: var(--width);
 }
 </style>

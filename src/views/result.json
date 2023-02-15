@@ -144,8 +144,8 @@
     "status": "success",
     "nodeType": "process",
     "circleColor": "#A4CDFC",
-    "frontLineColor": "yellow",
-    "endLineColor": "blue",
+    "frontLineColor": "#A4CDFC",
+    "endLineColor": "#A4CDFC",
     "popovers": [
       {
         "title": "标题1:xxxx申请单",

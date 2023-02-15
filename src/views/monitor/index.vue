@@ -133,6 +133,7 @@
           <el-table-column
             prop="taskid"
             label="任务单编号/消息ID"
+            show-overflow-tooltip
           />
           <el-table-column
             prop="sendTime"
