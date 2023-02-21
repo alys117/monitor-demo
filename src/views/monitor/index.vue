@@ -3,13 +3,13 @@
     <div style="height: calc(100vh - 17px);width: 320px;flex-shrink: 0;border-right: 1px solid rgba(229, 229, 229, 1);">
       <div class="left-container">
         <div style="margin-top: 10px">
-          申请单：<span style="color: rgba(42, 130, 228, 1);">APNKT-JS-200721-0001</span>
+          申请单：<span style="color: rgba(42, 130, 228, 1);">{{ applyOrder.applyId }}</span>
         </div>
         <div>
-          调单编号：JSJ-19002834-PCC
+          调单编号：{{ applyOrder.combineWorkOrderNumber }}
         </div>
         <div>
-          局数据文号：JSJ-19002834-PCC
+          局数据文号：{{ applyOrder.fileNo }}
         </div>
         <div class="timeline-container">
           <el-timeline>
@@ -31,7 +31,7 @@
           <Countdown :end="deadline" />
         </div>
         <div style="flex-shrink: 0;width: 100%;">
-          <div>
+          <div style="margin: 5px 0;">
             任务单：
           </div>
           <el-table
@@ -45,16 +45,16 @@
               label="任务单编号"
             >
               <template slot-scope="scope">
-                <el-link type="primary" @click="linkClick(scope.row)"> {{ scope.row.taskid }} </el-link>
+                <el-link type="primary" @click="linkClick(scope.row)"> {{ scope.row.taskNumber }} </el-link>
               </template>
             </el-table-column>
             <el-table-column
-              prop="status"
+              prop="taskStatus"
               label="状态"
               width="100"
             />
           </el-table>
-          <div style="margin:10px 0; color: #20a0ff;text-align: center;cursor: pointer;user-select: none">
+          <div v-if="taskTableData.length>3" style="margin:10px 0; color: #20a0ff;text-align: center;cursor: pointer;user-select: none">
             <div v-if="!spread" @click="spread=!spread">
               <div style="display: inline-block;transform: rotate(90deg);">
                 <i class="el-icon-d-arrow-right" />
@@ -69,7 +69,7 @@
             </div>
           </div>
 
-          <div>
+          <div style="margin: 5px 0;">
             派单省公司：
           </div>
           <el-table
@@ -83,11 +83,11 @@
               label="网元"
             >
               <template slot-scope="scope">
-                <el-link type="success" @click="cellClick(scope.row)"> {{ scope.row.netEl }} </el-link>
+                <el-link type="success" @click="cellClick(scope.row)"> {{ scope.row.netElement }} </el-link>
               </template>
             </el-table-column>
             <el-table-column
-              prop="status"
+              prop="dispatchStatus"
               width="100"
               label="状态"
             />
@@ -98,7 +98,7 @@
     <div style="height: 100%;flex: 1;min-width: 1000px;padding: 20px">
       <div class="flex-space-between" style="width: 1000px">
         <Legend />
-        <el-button type="primary" size="mini">返回</el-button>
+        <el-button type="primary" size="mini" @click="back()">返回</el-button>
       </div>
       <div style="width: 980px;">
         <div v-for="(idx,index) in group" :key="index">
@@ -175,45 +175,68 @@ import TopLeft from '@/views/components/quarter-circle/top-left.vue'
 import BottomLeft from '@/views/components/quarter-circle/bottom-left.vue'
 import Countdown from '@/views/components/countdown/index.vue'
 import result from '@/views/result.json'
+import { getFlow, getMainDetail, getLinkDetailByApplyId } from '@/api/table'
+
 export default {
   name: 'Index',
   components: { Legend, Node, TopRight, bottomRight, TopLeft, BottomLeft, Countdown },
   data() {
     return {
+      applyId: '',
+      applyOrder: {
+        applyId: '申请单ID1',
+        applyNumber: '申请单1',
+        combineWorkOrderNumber: '调单编号1',
+        fileNo: '局数据文号',
+        bBossTime: 'BBOSS同步业编时间',
+        applyTime: '工单申请时间/局管接收工单时间',
+        planFinishTime: '要求完成时间',
+        finishedTime: '归档时间'
+      },
+      taskOrder: {
+        taskId: '任务单ID',
+        taskNumber: '任务单编号',
+        taskStatus: '任务单状态'
+      },
+      dispatchOrderCompany: {
+        dispatchId: '派单ID',
+        netElement: '网元',
+        dispatchStatus: '状态'
+      },
       dialogVisible: false,
       netTitle: '',
       spread: false, // 展开收起
       deadline: Date.now() + 1000 * 60 * 39, // Date.now() + 1000 * 60 * 60 * 8
       taskTableData: [
         {
-          taskid: 'JSJ-19002834-PCC',
-          status: '自动执行'
+          taskNumber: 'JSJ-19002834-PCC',
+          taskStatus: '自动执行'
         },
         {
-          taskid: 'JSJ-19002834-PCC',
-          status: '人工下发'
+          taskNumber: 'JSJ-19002834-PCC',
+          taskStatus: '人工下发'
         },
         {
-          taskid: 'JSJ-19002834-PCC',
-          status: '人工下发'
+          taskNumber: 'JSJ-19002834-PCC',
+          taskStatus: '人工下发'
         },
         {
-          taskid: 'JSJ-19002834-PCC',
-          status: '人工下发'
+          taskNumber: 'JSJ-19002834-PCC',
+          taskStatus: '人工下发'
         },
         {
-          taskid: 'JSJ-19002834-PCC',
-          status: '人工下发'
+          taskNumber: 'JSJ-19002834-PCC',
+          taskStatus: '人工下发'
         }
       ],
       taskSendProvinceTableData: [
         {
-          netEl: '传统DNS',
-          status: '归档'
+          netElement: '传统DNS',
+          dispatchStatus: '归档'
         },
         {
-          netEl: '传统MME',
-          status: '制作中'
+          netElement: '传统MME',
+          dispatchStatus: '制作中'
         }
       ],
       netElTableData: [
@@ -239,163 +262,105 @@ export default {
       activities: [
         {
           content: 'BOSS同步业编时间',
-          timestamp: '2018-04-12 20:46:11',
+          timestamp: '',
           size: 'large',
-          type: 'primary',
+          type: '',
           icon: 'el-icon-circle-check'
         }, {
           content: '局管接收工单时间',
-          timestamp: '2018-04-03 20:46',
+          timestamp: '',
           icon: 'el-icon-circle-check',
           size: 'large',
-          type: 'primary'
+          type: ''
           // color: '#0bbd87'
         }, {
           content: '要求完成时间',
-          timestamp: '2018-04-03 20:46',
+          timestamp: '',
           icon: 'el-icon-circle-check',
-          type: 'primary',
+          type: '',
           size: 'large'
         }, {
           content: '归档时间',
           icon: 'el-icon-circle-check',
           size: 'large',
+          type: '',
           timestamp: ''
         }
       ],
-      flow: result,
-      group: [],
-      flow1: [
-        {
-          direction: 'normal',
-          content1: '支持使用图标',
-          content2: '支持使用图标',
-          circleType: 'circle',
-          nodeType: 'start',
-          circleColor: '#f56c6c',
-          frontLineColor: '#f56c6c',
-          endLineColor: '#e1e2fc',
-          popovers: [
-            {
-              title: '标题1:xxxx申请单',
-              gridData: [
-                {
-                  '姓名': '张三',
-                  '年龄': 18
-                },
-                {
-                  '姓名': '李四',
-                  '年龄': 52
-                }
-              ]
-            },
-            {
-              title: '标题2: 一段描述',
-              gridData: [
-                {
-                  '自定义1': '张三1',
-                  '自定义2': '张三2',
-                  'custom1': 18
-                },
-                {
-                  '自定义1': '李四',
-                  '自定义2': '李四2',
-                  'custom1': 52
-                }
-              ]
-            }
-          ]
-        },
-        {
-          direction: 'normal',
-          content1: '支持使用图标',
-          content2: '支持使用图标',
-          circleType: 'circle',
-          nodeType: 'process',
-          circleColor: '#f56c6c',
-          frontLineColor: '#f56c6c',
-          endLineColor: '#e1e2fc',
-          popovers: [
-            {
-              title: '标题1:xxxx申请单',
-              gridData: [
-                {
-                  '姓名': '张三',
-                  '年龄': 18
-                },
-                {
-                  '姓名': '李四',
-                  '年龄': 52
-                }
-              ]
-            },
-            {
-              title: '标题2: 一段描述',
-              gridData: [
-                {
-                  '自定义1': '张三1',
-                  '自定义2': '张三2',
-                  'custom1': 18
-                },
-                {
-                  '自定义1': '李四',
-                  '自定义2': '李四2',
-                  'custom1': 52
-                }
-              ]
-            }
-          ]
-        },
-        {
-          direction: 'reverse',
-          content1: '支持使用图标',
-          content2: '支持使用图标',
-          circleType: 'circle-shadow',
-          nodeType: 'end',
-          circleColor: '#f56c6c',
-          frontLineColor: '#f56c6c',
-          endLineColor: '#e1e2fc',
-          popovers: [
-            {
-              title: '标题1:xxxx申请单',
-              gridData: [
-                {
-                  '姓名': '张三',
-                  '年龄': 18
-                },
-                {
-                  '姓名': '李四',
-                  '年龄': 52
-                }
-              ]
-            },
-            {
-              title: '标题2: 一段描述',
-              gridData: [
-                {
-                  '自定义1': '张三1',
-                  '自定义2': '张三2',
-                  'custom1': 18
-                },
-                {
-                  '自定义1': '李四',
-                  '自定义2': '李四2',
-                  'custom1': 52
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      flow: [],
+      group: []
     }
   },
   mounted() {
-    for (let i = 0; i < this.flow.length; i++) {
-      if (!this.group[Math.floor(i / 5)]) {
-        this.group[Math.floor(i / 5)] = []
+    getMainDetail({ applyId: this.$route.query.applyId || '' }).then(res => {
+      console.log(res.data)
+      this.applyOrder = res.data.applyOrder
+      this.activities[0].timestamp = this.applyOrder.bBossTime
+      this.activities[1].timestamp = this.applyOrder.applyTime
+      this.activities[2].timestamp = this.applyOrder.planFinishTime
+      this.activities[3].timestamp = this.applyOrder.finishedTime
+      this.activities.forEach(item => { if (item.timestamp) item.type = 'primary' })
+      this.deadline = Date.parse(new Date(this.applyOrder.planFinishTime || 0)) // 计时器要求输入时间戳
+      this.taskTableData = res.data.taskOrder
+      this.netElTableData = res.data.dispatchOrderCompany
+    })
+    getLinkDetailByApplyId({ applyId: this.$route.query.applyId || '' }).then(res => {
+      console.log(res.data)
+      this.flow = []
+      this.flow.push(res.data.applyOrderStorage)
+      this.flow.push(res.data.applyOrderLeaderAudit)
+      this.flow.push(res.data.applyOrderDataCheck)
+      this.flow.push(res.data.applyOrderGenerateCombine)
+      this.flow.push(res.data.combineOrderLeaderAudit)
+      this.flow.push(res.data.combineOrderPipStorage)
+      this.flow.push(res.data.dispatchOrderDistribute)
+      this.flow.push(res.data.taskOrderLineUp)
+      this.flow.push(res.data.taskOrderRiskAssessment)
+      this.flow.push(res.data.taskOrderBeforehand)
+      this.flow.push(res.data.taskOrderGenerateScheme)
+      this.flow.push(res.data.taskOrderAuditScheme)
+      this.flow.push(res.data.taskOrderTreasury)
+      this.flow.push(res.data.taskOrderInstructSend)
+      this.flow.push(res.data.taskOrderInstructSendAudit)
+      this.flow.push(res.data.taskOrderAfterwardsAudit)
+      this.flow.push(res.data.taskOrderFile)
+      this.flow.push(res.data.applyOrderFile)
+      this.flow.forEach((item, i) => {
+        // 第一个节点的nodeType为start，最后一个节点的nodeType为end，其他为normal
+        if (i === 0) item.nodeType = 'start'
+        else if (i === this.flow.length - 1) item.nodeType = 'end'
+        else item.nodeType = 'normal'
+
+        // 被5除整数部分为偶数时，从左到右，为奇数时，从右到左
+        if (Math.floor(i / 5) % 2 === 1) item.direction = 'reverse' // 从右到左
+        else item.direction = 'normal'
+
+        item.frontLineColor = '#A4CDFC'
+        item.endLineColor = '#A4CDFC'
+      })
+
+      const tmp = []
+      for (let i = 0; i < this.flow.length; i++) {
+        if (!tmp[Math.floor(i / 5)]) {
+          tmp[Math.floor(i / 5)] = []
+        }
+        tmp[Math.floor(i / 5)][i % 5] = i
       }
-      this.group[Math.floor(i / 5)][i % 5] = i
-    }
+      this.group = tmp
+      console.log(this.flow, this.group)
+    })
+    // getFlow().then(res => {
+    //   console.log(res.data)
+    //   this.flow = res.data.items
+    //   const tmp = []
+    //   for (let i = 0; i < this.flow.length; i++) {
+    //     if (!tmp[Math.floor(i / 5)]) {
+    //       tmp[Math.floor(i / 5)] = []
+    //     }
+    //     tmp[Math.floor(i / 5)][i % 5] = i
+    //   }
+    //   this.group = tmp
+    // })
   },
   methods: {
     cellClick(row, column, cell, event) {

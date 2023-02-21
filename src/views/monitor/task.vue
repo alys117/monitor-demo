@@ -3,24 +3,24 @@
     <div style="height: calc(100vh - 17px);width: 320px;flex-shrink: 0;border-right: 1px solid rgba(229, 229, 229, 1);">
       <div class="left-container">
         <div style="margin-top: 10px">
-          任务单：<span style="color: rgba(42, 130, 228, 1);">APNKT-JS-200721--华为</span>
+          任务单：<span style="color: rgba(42, 130, 228, 1);">{{ taskOrder.taskId }}</span>
         </div>
         <div>
           状态：自动执行
         </div>
         <div class="flex">
-          <div>局数据文号：</div>
+          <div>申请单：</div>
           <div>
-            <div style="cursor: pointer;color: #20a0ff;margin-bottom: 5px">JSJ-19002834-PCC-001</div>
-            <div style="cursor: pointer;color: #20a0ff;margin-bottom: 5px">JSJ-19002834-PCC-002</div>
-            <div style="cursor: pointer;color: #20a0ff;margin-bottom: 5px">JSJ-19002834-PCC-003</div>
+            <div v-for="item in taskOrder.applyIds" :key="item" style="cursor: pointer;color: #20a0ff;margin-bottom: 5px">
+              {{ item }}
+            </div>
           </div>
         </div>
         <div>
-          调单编号：JSJ-19002834-PCC
+          调单编号：{{ taskOrder.combineWorkOrderNumber }}
         </div>
         <div>
-          局数据文号：JSJ-19002834-PCC
+          局数据文号：{{ taskOrder.fileNo}}
         </div>
         <div class="timeline-container">
           <el-timeline>
@@ -46,7 +46,7 @@
     <div style="height: 100%;flex: 1;min-width: 1000px;padding: 20px">
       <div class="flex-space-between" style="width: 1000px">
         <Legend />
-        <el-button type="primary" size="mini">返回</el-button>
+        <el-button type="primary" size="mini" @click="back()">返回</el-button>
       </div>
       <div style="width: 980px;">
         <div v-for="(idx,index) in group" :key="index">
@@ -71,7 +71,7 @@ import bottomRight from '@/views/components/quarter-circle/bottom-right.vue'
 import TopLeft from '@/views/components/quarter-circle/top-left.vue'
 import BottomLeft from '@/views/components/quarter-circle/bottom-left.vue'
 import Countdown from '@/views/components/countdown/index.vue'
-import result from '@/views/result.json'
+import { getLinkDetailByTaskId, getTakeDetail } from '@/api/table'
 export default {
   name: 'Index',
   components: { Legend, Node, TopRight, bottomRight, TopLeft, BottomLeft, Countdown },
@@ -79,6 +79,7 @@ export default {
     return {
       spread: false, // 展开收起
       deadline: Date.now() + 1000 * 60 * 39, // Date.now() + 1000 * 60 * 60 * 8
+      taskOrder: {},
       activities: [
         {
           content: '要求完成时间/完成时限',
@@ -93,144 +94,68 @@ export default {
           timestamp: ''
         }
       ],
-      flow: result,
-      group: [],
-      flow1: [
-        {
-          direction: 'normal',
-          content1: '支持使用图标',
-          content2: '支持使用图标',
-          circleType: 'circle',
-          nodeType: 'start',
-          circleColor: '#f56c6c',
-          frontLineColor: '#f56c6c',
-          endLineColor: '#e1e2fc',
-          popovers: [
-            {
-              title: '标题1:xxxx申请单',
-              gridData: [
-                {
-                  '姓名': '张三',
-                  '年龄': 18
-                },
-                {
-                  '姓名': '李四',
-                  '年龄': 52
-                }
-              ]
-            },
-            {
-              title: '标题2: 一段描述',
-              gridData: [
-                {
-                  '自定义1': '张三1',
-                  '自定义2': '张三2',
-                  'custom1': 18
-                },
-                {
-                  '自定义1': '李四',
-                  '自定义2': '李四2',
-                  'custom1': 52
-                }
-              ]
-            }
-          ]
-        },
-        {
-          direction: 'normal',
-          content1: '支持使用图标',
-          content2: '支持使用图标',
-          circleType: 'circle',
-          nodeType: 'process',
-          circleColor: '#f56c6c',
-          frontLineColor: '#f56c6c',
-          endLineColor: '#e1e2fc',
-          popovers: [
-            {
-              title: '标题1:xxxx申请单',
-              gridData: [
-                {
-                  '姓名': '张三',
-                  '年龄': 18
-                },
-                {
-                  '姓名': '李四',
-                  '年龄': 52
-                }
-              ]
-            },
-            {
-              title: '标题2: 一段描述',
-              gridData: [
-                {
-                  '自定义1': '张三1',
-                  '自定义2': '张三2',
-                  'custom1': 18
-                },
-                {
-                  '自定义1': '李四',
-                  '自定义2': '李四2',
-                  'custom1': 52
-                }
-              ]
-            }
-          ]
-        },
-        {
-          direction: 'reverse',
-          content1: '支持使用图标',
-          content2: '支持使用图标',
-          circleType: 'circle-shadow',
-          nodeType: 'end',
-          circleColor: '#f56c6c',
-          frontLineColor: '#f56c6c',
-          endLineColor: '#e1e2fc',
-          popovers: [
-            {
-              title: '标题1:xxxx申请单',
-              gridData: [
-                {
-                  '姓名': '张三',
-                  '年龄': 18
-                },
-                {
-                  '姓名': '李四',
-                  '年龄': 52
-                }
-              ]
-            },
-            {
-              title: '标题2: 一段描述',
-              gridData: [
-                {
-                  '自定义1': '张三1',
-                  '自定义2': '张三2',
-                  'custom1': 18
-                },
-                {
-                  '自定义1': '李四',
-                  '自定义2': '李四2',
-                  'custom1': 52
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      flow: [],
+      group: []
     }
   },
   mounted() {
-    const tmp = []
-    for (let i = 0; i < this.flow.length; i++) {
-      if (!tmp[Math.floor(i / 5)]) {
-        tmp[Math.floor(i / 5)] = []
+    getTakeDetail({ applyId: this.$route.query.applyId || '' }).then(res => {
+      console.log(res.data)
+      this.taskOrder = res.data.taskOrder
+      this.activities[0].timestamp = this.taskOrder.planFinishTime
+      this.activities[1].timestamp = this.taskOrder.finishedTime
+    })
+    getLinkDetailByTaskId({ taskId: this.$route.query.taskId || '' }).then(res => {
+      this.flow = []
+      this.flow.push(res.data.applyOrderStorage)
+      this.flow.push(res.data.applyOrderLeaderAudit)
+      this.flow.push(res.data.applyOrderDataCheck)
+      this.flow.push(res.data.applyOrderGenerateCombine)
+      this.flow.push(res.data.combineOrderLeaderAudit)
+      this.flow.push(res.data.combineOrderPipStorage)
+      this.flow.push(res.data.dispatchOrderDistribute)
+      this.flow.push(res.data.taskOrderLineUp)
+      this.flow.push(res.data.taskOrderRiskAssessment)
+      this.flow.push(res.data.taskOrderBeforehand)
+      this.flow.push(res.data.taskOrderGenerateScheme)
+      this.flow.push(res.data.taskOrderAuditScheme)
+      this.flow.push(res.data.taskOrderTreasury)
+      this.flow.push(res.data.taskOrderInstructSend)
+      this.flow.push(res.data.taskOrderInstructSendAudit)
+      this.flow.push(res.data.taskOrderAfterwardsAudit)
+      this.flow.push(res.data.taskOrderFile)
+      !res.data.applyOrderFile || this.flow.push(res.data.applyOrderFile)
+      console.log(this.flow, 3333)
+      this.flow.forEach((item, i) => {
+        // 第一个节点的nodeType为start，最后一个节点的nodeType为end，其他为normal
+        if (i === 0) item.nodeType = 'start'
+        else if (i === this.flow.length - 1) item.nodeType = 'end'
+        else item.nodeType = 'normal'
+
+        // 被5除整数部分为偶数时，从左到右，为奇数时，从右到左
+        if (Math.floor(i / 5) % 2 === 1) item.direction = 'reverse' // 从右到左
+        else item.direction = 'normal'
+
+        item.frontLineColor = '#A4CDFC'
+        item.endLineColor = '#A4CDFC'
+      })
+
+      const tmp = []
+      for (let i = 0; i < this.flow.length; i++) {
+        if (!tmp[Math.floor(i / 5)]) {
+          tmp[Math.floor(i / 5)] = []
+        }
+        tmp[Math.floor(i / 5)][i % 5] = i
       }
-      tmp[Math.floor(i / 5)][i % 5] = i
-    }
-    this.group = tmp
-    // this.$forceUpdate() // 重新渲染
+      this.group = tmp
+      // this.$forceUpdate() // 重新渲染,如果不使用tmp变量的话，需要这句
+    })
   },
-  methods: {}
+  methods: {
+    back() {
+      this.$router.go(-1)
+    }
+  }
 }
 </script>
 

@@ -46,7 +46,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/monitor/index',
+    redirect: '/monitor/apply',
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
@@ -93,12 +93,12 @@ export const constantRoutes = [
   {
     path: '/monitor',
     component: Layout,
-    redirect: '/monitor/index',
+    redirect: '/monitor/apply',
     name: 'Father',
     meta: { title: 'Father', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'index',
+        path: 'apply',
         name: 'Monitor',
         component: () => import('@/views/monitor/index'),
         meta: { title: 'monitor', icon: 'form' }
@@ -205,7 +205,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

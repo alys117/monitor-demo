@@ -3,7 +3,7 @@
   .main-container {
     min-height: 100%;
     transition: margin-left .28s;
-    margin-left: $sideBarWidth;
+    margin-left: $sideBarWidth;  // 隐藏侧边栏时，主体内容的左边距
     position: relative;
   }
 
@@ -97,7 +97,8 @@
     }
 
     .main-container {
-      margin-left: 54px;
+      //margin-left: 54px; // 隐藏侧边，窄条
+      margin-left: 0;
     }
 
     .submenu-title-noDropdown {

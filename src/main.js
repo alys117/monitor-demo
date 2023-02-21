@@ -25,7 +25,7 @@ import '@/permission' // permission control
  */
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
-  mockXHR()
+  // mockXHR()
 }
 
 // set ElementUI lang to EN
@@ -42,7 +42,7 @@ Vue.directive('scoped', function(element, binding) {
   const componentTag = element.__vue__.$vnode.tag
   const target = [] // 需要添加scopedId的元素
 
-  console.log(componentTag)
+  // console.log(componentTag)
 
   if (componentTag.indexOf('ElPopover') !== -1) {
     // popover组件

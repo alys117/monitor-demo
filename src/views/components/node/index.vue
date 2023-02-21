@@ -3,7 +3,7 @@
     <div class="front-line" :style="frontLineVar" />
     <div class="point-container">
       <div class="head">
-        <p v-html="baseInfo.content1"></p>
+        <p v-html="baseInfo.linkName"></p>
       </div>
       <div style="user-select: none;display: flex;align-items:center;justify-content: center;height: 50px">
         <div class="front" :style="frontLineVar">
@@ -16,7 +16,7 @@
             transition="abc"
             trigger="click"
           >
-            <div slot="reference" :class="baseInfo.status === 'error' || baseInfo.status === 'running' ? 'circle-shadow' :'circle'" :style="pointVar" />
+            <div slot="reference" :class="baseInfo.linkStatus === '2' || baseInfo.linkStatus === '1' ? 'circle-shadow' :'circle'" :style="pointVar" />
             <div v-for="it in baseInfo.popovers" :key="it.title">
               <div class="flex-space-between">
                 <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.title }}</p>
@@ -24,7 +24,7 @@
               </div>
               <el-table
                 ref="myTable"
-                :data="it.tableData"
+                :data="it.linkRecordData"
                 :cell-style="{'text-align':'center',color:'rgba(56, 56, 56, 1)'}"
                 :header-cell-style="{background:'rgba(240, 245, 255, 1)','text-align':'center',color: 'rgba(128, 128, 128, 1)', 'font-weight':'normal'}"
                 style="width: 100%"
@@ -34,7 +34,7 @@
                   v-for="(item, index) in it.dynamicColumns"
                   :key="index"
                   :prop="item.prop"
-                  :width="flexColumnWidth(item.label,item.prop, it.tableData)"
+                  :width="flexColumnWidth(item.label,item.prop, it.linkRecordData)"
                 >
                   <template slot="header">
                     <span>{{ item.label }}</span>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="foot">
-        <p>{{ baseInfo.content2 }}</p>
+        <p v-html="baseInfo.linkNameDesc ? baseInfo.linkNameDesc.replace(/\r\n/,'<br>'):''"></p>
       </div>
     </div>
     <div class="end-line" :style="endLineVar" />
@@ -128,13 +128,13 @@ export default {
   computed: {
     pointVar() {
       // return { '--circleColor': this.baseInfo.circleColor }
-      if (this.baseInfo.status === 'success') {
+      if (this.baseInfo.linkStatus === '3') {
         return { '--circleColor': 'rgba(42, 130, 228, 1)' }
-      } else if (this.baseInfo.status === 'running') {
+      } else if (this.baseInfo.linkStatus === '1') {
         return { '--circleColor': 'rgba(67, 207, 124, 1)' }
-      } else if (this.baseInfo.status === 'error') {
+      } else if (this.baseInfo.linkStatus === '2') {
         return { '--circleColor': 'rgba(255, 87, 51, 1)' }
-      } else if (this.baseInfo.status === 'not-running') {
+      } else if (this.baseInfo.linkStatus === '0') {
         return { '--circleColor': 'rgba(128, 128, 128, 1)' }
       } else {
         return { '--circleColor': 'rgba(0, 0, 0, 1)' }
@@ -162,10 +162,11 @@ export default {
     }
   },
   created() {
+    if (!this.baseInfo.popovers) return
     this.baseInfo.popovers.forEach(it => {
       it.propArr = []
       it.dynamicColumns = []
-      it.tableData.forEach(item => {
+      it.linkRecordData.forEach(item => {
         Object.keys(item).forEach(key => {
           if (it.propArr.indexOf(key) === -1) {
             it.propArr.push(key)
@@ -234,6 +235,9 @@ export default {
 }
 .head, .foot{
   height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
 }
 .head p, .foot p{
   line-height: 18px;
