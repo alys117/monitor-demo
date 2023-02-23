@@ -17,28 +17,28 @@ export function getFlow(params) {
 
 export function getMainDetail(data) {
   return request({
-    url: '/web/wholeProcessMonit/applyDimensionDetail.ajax',
+    url: '/admin/web/wholeProcessMonit/applyDimensionDetail.ajax',
     method: 'post',
     data
   })
 }
-export function getTakeDetail(data) {
+export function getTaskDetail(data) {
   return request({
-    url: '/web/wholeProcessMonit/taskDimensionDetail.ajax',
+    url: '/admin/web/wholeProcessMonit/taskDimensionDetail.ajax',
     method: 'post',
     data
   })
 }
 export function getLinkDetailByApplyId(data) {
   return request({
-    url: '/web/wholeProcessMonit/linkMonitDetailByApplyId.ajax',
+    url: '/admin/web/wholeProcessMonit/linkMonitDetailByApplyId.ajax',
     method: 'post',
     data
   })
 }
 export function getLinkDetailByTaskId(data) {
   return request({
-    url: '/web/wholeProcessMonit/linkMonitDetailByTaskId.ajax',
+    url: '/admin/web/wholeProcessMonit/linkMonitDetailByTaskId.ajax',
     method: 'post',
     data
   })

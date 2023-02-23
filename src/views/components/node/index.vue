@@ -17,10 +17,10 @@
             trigger="click"
           >
             <div slot="reference" :class="baseInfo.linkStatus === '2' || baseInfo.linkStatus === '1' ? 'circle-shadow' :'circle'" :style="pointVar" />
-            <div v-for="it in baseInfo.popovers" :key="it.title">
+            <div v-for="it in baseInfo.popovers" :key="it.linkTitle">
               <div class="flex-space-between">
-                <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.title }}</p>
-                <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.title2 }}</p>
+                <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.linkTitle }}</p>
+                <p style="padding: 0;margin: 5px 0;color: rgba(56, 56, 56, 1)">{{ it.linkTtitleDesc }}</p>
               </div>
               <el-table
                 ref="myTable"
@@ -128,16 +128,16 @@ export default {
   computed: {
     pointVar() {
       // return { '--circleColor': this.baseInfo.circleColor }
-      if (this.baseInfo.linkStatus === '3') {
+      if (this.baseInfo.linkStatus === '3' || this.baseInfo.linkStatus === '已完成') { // 1-执行中，2-异常，3-已完成，0-未执行
         return { '--circleColor': 'rgba(42, 130, 228, 1)' }
-      } else if (this.baseInfo.linkStatus === '1') {
+      } else if (this.baseInfo.linkStatus === '1' || this.baseInfo.linkStatus === '执行中') {
         return { '--circleColor': 'rgba(67, 207, 124, 1)' }
-      } else if (this.baseInfo.linkStatus === '2') {
+      } else if (this.baseInfo.linkStatus === '2' || this.baseInfo.linkStatus === '异常') {
         return { '--circleColor': 'rgba(255, 87, 51, 1)' }
-      } else if (this.baseInfo.linkStatus === '0') {
+      } else if (this.baseInfo.linkStatus === '0' || this.baseInfo.linkStatus === '未执行') {
         return { '--circleColor': 'rgba(128, 128, 128, 1)' }
       } else {
-        return { '--circleColor': 'rgba(0, 0, 0, 1)' }
+        return { '--circleColor': 'rgba(0, 0, 0, 0.1)' }
       }
     },
     frontLineVar() {

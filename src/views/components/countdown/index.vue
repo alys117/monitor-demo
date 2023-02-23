@@ -45,14 +45,14 @@ export default {
     }
   },
   mounted() {
-    this.countdown()
+    this.action(0)
   },
   methods: {
-    countdown() {
+    action(end) {
       // 目标日期时间戳
       // const end = Date.parse(new Date(this.time))
       // const end = Date.parse(new Date('2023-09-01 00:00:00'))
-      const end = this.end
+      // const end = this.end
       // 当前时间戳
       // const now = Date.parse(new Date())
       const now = new Date().getTime()
@@ -80,17 +80,20 @@ export default {
       this.min = min > 9 ? min : '0' + min
       this.sec = sec > 9 ? sec : '0' + sec
       // 赋值
-      const that = this
       if (min >= 0 && sec >= 0) {
         // 倒计时结束关闭订单
         if (min === 0 && sec === 0) {
           return
         }
-        // 一秒后递归
-        setTimeout(() => {
-          that.countdown()
-        }, 1000)
       }
+    },
+    countdown(end) {
+      this.action(end)
+      // 一秒后递归
+      setTimeout(() => {
+        console.log('倒计时', end)
+        this.countdown(end)
+      }, 1000)
     }
   }
 }

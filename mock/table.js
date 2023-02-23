@@ -13,7 +13,7 @@ const data = Mock.mock({
 
 module.exports = [
   {
-    url: '/web/wholeProcessMonit/applyDimensionDetail.ajax',
+    url: '/admin/web/wholeProcessMonit/applyDimensionDetail.ajax',
     type: 'post',
     response: config => {
       return {
@@ -37,14 +37,47 @@ module.exports = [
           dispatchOrderCompany: [{
             'dispatchId': '派单ID',
             'netElement': '网元',
-            'dispatchStatus': '状态'
-          }]
+            'dispatchStatus': '状态',
+            'listSendData': {
+              'linkTitle': 'title',
+              'linkRecordData': [
+                {
+                  sendNetwork: '派单网页',
+                  taskNumber: '任务单编号',
+                  startTime: '2023-01-02 12:12:36',
+                  endTime: '2023-01-02 12:12:36',
+                  linkStatus: '处理环节状态:1-下发成功，2-下发败',
+                  makeTime: '制作时长',
+                  operator: '操作人'
+                }
+              ]
+            }
+          }, {
+            'dispatchId': '派单ID',
+            'netElement': '网元2',
+            'dispatchStatus': '状态',
+            'listSendData': {
+              'linkTitle': 'title',
+              'linkRecordData': [
+                {
+                  sendNetwork: '派单网页2',
+                  taskNumber: '任务单编号',
+                  startTime: '2023-01-02 12:12:36',
+                  endTime: '2023-01-02 12:12:36',
+                  linkStatus: '1',
+                  makeTime: '制作时长',
+                  operator: '操作人'
+                }
+              ]
+            }
+          }
+          ]
         }
       }
     }
   },
   {
-    url: '/web/wholeProcessMonit/taskDimensionDetail.ajax',
+    url: '/admin/web/wholeProcessMonit/taskDimensionDetail.ajax',
     type: 'post',
     response: config => {
       return {
@@ -64,7 +97,7 @@ module.exports = [
     }
   },
   {
-    url: '/web/wholeProcessMonit/linkMonitDetailByApplyId.ajax',
+    url: '/admin/web/wholeProcessMonit/linkMonitDetailByApplyId.ajax',
     type: 'post',
     response: config => {
       return {
@@ -73,21 +106,22 @@ module.exports = [
           'applyOrderStorage': {
             'linkName': '申请单入库', // 圆点上方文字，是节点描述的，流程图只有17个节点或者18个节点，所以其实这两是固定的内容
             'linkNameDesc': '一段内容，可以有换无污染热温热我报表行符\r\n哈', // 圆点下方文字
-            'linkStatus': '1', // 节点状态：1-执行中，2-异常，3-已完成，0-未执行四种
+            'linkStatus': '1', // 注意，这里直接用文字了： 节点状态：1-执行中，2-异常，3-已完成，0-未执行四种
             'popovers': [
               {
                 'linkTitle': '标题1:xxxx申请单',
                 'linkTtitleDesc': '耗时：3h',
                 'linkRecordData': [
-                  { 'step': '步骤', 'stepInTime': '进入时间', 'startTime': '2023-01-02 12:12:36', 'endTime': '2023-01-02 12:12:36', 'result': '结果', 'takeUpTime': '耗时', 'monitStatus': '监控状态:1-正常，2-异常，3-已完成', 'remark': '异常原因' }
+                  // 这里也是直接用文字了
+                  { '开始时间': '2023-02-13', '结束时间': '2023-02-13 14:23:15', '结果': '成功', '耗时': '03:01', '监控状态': '1-正常，2-异常，3-已完成', '异常原因': '异常原因' }
+                  // { 'step': '步骤', 'stepInTime': '进入时间', 'startTime': '2023-01-02 12:12:36', 'endTime': '2023-01-02 12:12:36', 'result': '结果', 'takeUpTime': '耗时', 'monitStatus': '监控状态:1-正常，2-异常，3-已完成', 'remark': '异常原因' }
                 ]
               },
               {
                 'linkTitle': 'title',
                 'linkTtitleDesc': '耗时：3h',
                 'linkRecordData': [
-                  { 'startTime': '2023-01-02 12:12:36', 'endTime': '2023-01-02 12:12:36', 'result': '结果', 'takeUpTime': '耗时', 'monitStatus': '监控状态:1-正常，2-异常，3-已完成', 'remark': '异常原因' },
-                  { 'startTime': '2023-01-02 12:12:36', 'endTime': '2023-01-02 12:12:36', 'result': '结果', 'takeUpTime': '耗时', 'monitStatus': '监控状态:1-正常，2-异常，3-已完成', 'remark': '异常原因' }
+                  { '开始时间': '2023-02-13', '结束时间': '2023-02-13 14:23:15', '结果': '成功', '耗时': '03:01', '监控状态': '1-正常，2-异常，3-已完成', '异常原因': '异常原因' }
                 ]
               }
             ]
@@ -167,7 +201,7 @@ module.exports = [
     }
   },
   {
-    url: '/web/wholeProcessMonit/linkMonitDetailByTaskId.ajax',
+    url: '/admin/web/wholeProcessMonit/linkMonitDetailByTaskId.ajax',
     type: 'post',
     response: config => {
       return {

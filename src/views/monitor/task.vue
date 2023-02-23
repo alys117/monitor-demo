@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative;display: flex;overflow: auto">
-    <div style="height: calc(100vh - 17px);width: 320px;flex-shrink: 0;border-right: 1px solid rgba(229, 229, 229, 1);">
-      <div class="left-container">
+    <div class="gundongtiao" style="height: calc(100vh - 17px);width: 320px;flex-shrink: 0;border-right: 1px solid rgba(229, 229, 229, 1);">
+      <div class="left-container gundongtiao">
         <div style="margin-top: 10px">
           任务单：<span style="color: rgba(42, 130, 228, 1);">{{ taskOrder.taskId }}</span>
         </div>
@@ -39,7 +39,7 @@
         </div>
         <div>
           剩余时间：
-          <Countdown :end="deadline" />
+          <Countdown ref="countdown" :end="deadline" />
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@ import bottomRight from '@/views/components/quarter-circle/bottom-right.vue'
 import TopLeft from '@/views/components/quarter-circle/top-left.vue'
 import BottomLeft from '@/views/components/quarter-circle/bottom-left.vue'
 import Countdown from '@/views/components/countdown/index.vue'
-import { getLinkDetailByTaskId, getTakeDetail } from '@/api/table'
+import { getLinkDetailByTaskId, getTaskDetail } from '@/api/table'
 export default {
   name: 'Index',
   components: { Legend, Node, TopRight, bottomRight, TopLeft, BottomLeft, Countdown },
@@ -99,11 +99,13 @@ export default {
     }
   },
   mounted() {
-    getTakeDetail({ applyId: this.$route.query.applyId || '' }).then(res => {
+    getTaskDetail({ applyId: this.$route.query.taskId || '' }).then(res => {
       console.log(res.data)
       this.taskOrder = res.data.taskOrder
       this.activities[0].timestamp = this.taskOrder.planFinishTime
       this.activities[1].timestamp = this.taskOrder.finishedTime
+      this.deadline = Date.parse(new Date(this.taskOrder.planFinishTime || 0)) // 计时器要求输入时间戳
+      this.$refs.countdown.countdown(this.deadline)
     })
     getLinkDetailByTaskId({ taskId: this.$route.query.taskId || '' }).then(res => {
       this.flow = []
@@ -125,7 +127,6 @@ export default {
       this.flow.push(res.data.taskOrderAfterwardsAudit)
       this.flow.push(res.data.taskOrderFile)
       !res.data.applyOrderFile || this.flow.push(res.data.applyOrderFile)
-      console.log(this.flow, 3333)
       this.flow.forEach((item, i) => {
         // 第一个节点的nodeType为start，最后一个节点的nodeType为end，其他为normal
         if (i === 0) item.nodeType = 'start'
@@ -160,13 +161,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.gundongtiao{
+  @media screen and (max-width: 1320px) {
+    height: calc(100vh - 17px);
+  }
+  height: 100vh;
+}
 .left-container{
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   height: calc(100vh - 17px);
   overflow: auto;
+  gap: 20px;
+  >div{
+    margin-top: 20px;
+  }
 }
 .timeline-container {
   margin-top: 10px;
