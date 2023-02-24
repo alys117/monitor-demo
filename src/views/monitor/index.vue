@@ -183,14 +183,14 @@ export default {
     return {
       applyId: '',
       applyOrder: {
-        applyId: '申请单ID1',
-        applyNumber: '申请单1',
-        combineWorkOrderNumber: '调单编号1',
-        fileNo: '局数据文号',
-        bBossTime: 'BBOSS同步业编时间',
-        applyTime: '工单申请时间/局管接收工单时间',
-        planFinishTime: '要求完成时间',
-        finishedTime: '归档时间'
+        applyId: '', // '申请单ID1',
+        applyNumber: '', // '申请单1',
+        combineWorkOrderNumber: '', // '调单编号1',
+        fileNo: '', // '局数据文号',
+        bBossTime: '', // 'BBOSS同步业编时间',
+        applyTime: '', // '工单申请时间/局管接收工单时间',
+        planFinishTime: '', // '要求完成时间',
+        finishedTime: '', // '归档时间'
       },
       taskOrder: {
         taskId: '任务单ID',
@@ -256,6 +256,10 @@ export default {
   },
   mounted() {
     getMainDetail({ applyId: this.$route.query.applyId || '' }).then(res => {
+      if (!res.data || !res.data.applyOrder) {
+        this.$message.error('未查询到此申请单基本信息！')
+        return
+      }
       this.applyOrder = res.data.applyOrder
       this.activities[0].timestamp = this.applyOrder.bbossTime
       this.activities[1].timestamp = this.applyOrder.applyTime
@@ -268,7 +272,10 @@ export default {
       this.taskSendProvinceTableData = res.data.dispatchOrderCompany
     })
     getLinkDetailByApplyId({ applyId: this.$route.query.applyId || '' }).then(res => {
-      console.log(res.data)
+      if (!res.data || !res.data.applyOrderStorage) {
+        this.$message.error('未查询到此申请单流程信息！')
+        return
+      }
       this.flow = []
       this.flow.push(res.data.applyOrderStorage)
       this.flow.push(res.data.applyOrderLeaderAudit)

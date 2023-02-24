@@ -100,6 +100,10 @@ export default {
   },
   mounted() {
     getTaskDetail({ taskId: this.$route.query.taskId }).then(res => {
+      if (!res.data || !res.data.taskOrder) {
+        this.$message.error('未查询到此任务单基本信息！')
+        return
+      }
       this.taskOrder = res.data.taskOrder
       this.activities[0].timestamp = this.taskOrder.planFinishTime
       this.activities[1].timestamp = this.taskOrder.finishedTime
@@ -108,6 +112,10 @@ export default {
       this.$refs.countdown.countdown(this.deadline)
     })
     getLinkDetailByTaskId({ taskId: this.$route.query.taskId || '' }).then(res => {
+      if (!res.data || !res.data.applyOrderStorage) {
+        this.$message.error('未查询到此任务单流程信息！')
+        return
+      }
       this.flow = []
       this.flow.push(res.data.applyOrderStorage)
       this.flow.push(res.data.applyOrderLeaderAudit)
