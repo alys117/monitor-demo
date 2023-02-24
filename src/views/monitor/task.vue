@@ -6,7 +6,7 @@
           任务单：<span style="color: rgba(42, 130, 228, 1);">{{ taskOrder.taskId }}</span>
         </div>
         <div>
-          状态：自动执行
+          状态：{{ taskOrder.taskStatus }}
         </div>
         <div class="flex">
           <div>申请单：</div>
@@ -20,7 +20,7 @@
           调单编号：{{ taskOrder.combineWorkOrderNumber }}
         </div>
         <div>
-          局数据文号：{{ taskOrder.fileNo}}
+          局数据文号：{{ taskOrder.fileNo }}
         </div>
         <div class="timeline-container">
           <el-timeline>
@@ -46,7 +46,7 @@
     <div style="height: 100%;flex: 1;min-width: 1000px;padding: 20px">
       <div class="flex-space-between" style="width: 1000px">
         <Legend />
-        <el-button type="primary" size="mini" @click="back()">返回</el-button>
+        <el-button type="primary" size="mini" style="margin-right: 10px" @click="back()">返回</el-button>
       </div>
       <div style="width: 980px;">
         <div v-for="(idx,index) in group" :key="index">
@@ -83,9 +83,9 @@ export default {
       activities: [
         {
           content: '要求完成时间/完成时限',
-          timestamp: '2018-04-12 20:46:11',
+          timestamp: '',
           size: 'large',
-          type: 'primary',
+          type: '',
           icon: 'el-icon-circle-check'
         }, {
           content: '归档时间',
@@ -99,11 +99,11 @@ export default {
     }
   },
   mounted() {
-    getTaskDetail({ applyId: this.$route.query.taskId || '' }).then(res => {
-      console.log(res.data)
+    getTaskDetail({ taskId: this.$route.query.taskId }).then(res => {
       this.taskOrder = res.data.taskOrder
       this.activities[0].timestamp = this.taskOrder.planFinishTime
       this.activities[1].timestamp = this.taskOrder.finishedTime
+      this.activities.forEach(item => { if (item.timestamp) item.type = 'primary' })
       this.deadline = Date.parse(new Date(this.taskOrder.planFinishTime || 0)) // 计时器要求输入时间戳
       this.$refs.countdown.countdown(this.deadline)
     })

@@ -36,7 +36,6 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    // before: require('./mock/mock-server.js'),
     proxy: {
       '/dev-api/admin': {
         target: 'http://10.1.202.17:19090', // 后端ip
@@ -47,7 +46,8 @@ module.exports = {
           '^/dev-api': '/'
         }
       }
-    }
+    },
+    after: require('./mock/mock-server.js') // 如果使用了before 那么如果也匹配到了，那么就不会走proxy了，如果匹配不到，那么就会走proxy
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

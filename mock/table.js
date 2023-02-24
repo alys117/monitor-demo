@@ -38,11 +38,11 @@ module.exports = [
             'dispatchId': '派单ID',
             'netElement': '网元',
             'dispatchStatus': '状态',
-            'listSendData': {
+            'listSendData': [{
               'linkTitle': 'title',
               'linkRecordData': [
                 {
-                  sendNetwork: '派单网页',
+                  sendNetwork: '派单网页1',
                   taskNumber: '任务单编号',
                   startTime: '2023-01-02 12:12:36',
                   endTime: '2023-01-02 12:12:36',
@@ -51,12 +51,12 @@ module.exports = [
                   operator: '操作人'
                 }
               ]
-            }
+            }]
           }, {
             'dispatchId': '派单ID',
             'netElement': '网元2',
             'dispatchStatus': '状态',
-            'listSendData': {
+            'listSendData': [{
               'linkTitle': 'title',
               'linkRecordData': [
                 {
@@ -69,7 +69,7 @@ module.exports = [
                   operator: '操作人'
                 }
               ]
-            }
+            }]
           }
           ]
         }

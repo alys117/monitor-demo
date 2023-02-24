@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative;display: flex;overflow: auto">
-    <div style="height: calc(100vh - 17px);width: 320px;flex-shrink: 0;border-right: 1px solid rgba(229, 229, 229, 1);">
-      <div class="left-container">
+    <div class="scrollbar-fit" style="width: 320px;flex-shrink: 0;border-right: 1px solid rgba(229, 229, 229, 1);">
+      <div class="left-container scrollbar-fit">
         <div style="margin-top: 10px">
           申请单：<span style="color: rgba(42, 130, 228, 1);">{{ applyOrder.applyId }}</span>
         </div>
@@ -28,7 +28,7 @@
         </div>
         <div>
           剩余时间：
-          <Countdown :end="deadline" />
+          <Countdown ref="countdown" :end="deadline" />
         </div>
         <div style="flex-shrink: 0;width: 100%;">
           <div style="margin: 5px 0;">
@@ -83,7 +83,7 @@
               label="网元"
             >
               <template slot-scope="scope">
-                <el-link type="success" @click="cellClick(scope.row)"> {{ scope.row.netElement }} </el-link>
+                <el-link type="success" @click="showDialog(scope.row)"> {{ scope.row.netElement }} </el-link>
               </template>
             </el-table-column>
             <el-table-column
@@ -96,9 +96,9 @@
       </div>
     </div>
     <div style="height: 100%;flex: 1;min-width: 1000px;padding: 20px">
-      <div class="flex-space-between" style="width: 1000px">
+      <div class="flex-space-between" style="width: 1000px;">
         <Legend />
-        <el-button type="primary" size="mini" @click="back()">返回</el-button>
+        <el-button type="primary" size="mini" style="margin-right: 10px" @click="back()">返回</el-button>
       </div>
       <div style="width: 980px;">
         <div v-for="(idx,index) in group" :key="index">
@@ -113,7 +113,7 @@
       </div>
     </div>
     <el-dialog
-      :title="netTitle"
+      :title="netTitle?netTitle:'未定义'"
       :visible.sync="dialogVisible"
       width="80%"
     >
@@ -126,34 +126,33 @@
           style="width: 100%"
         >
           <el-table-column
-            prop="netEl"
+            prop="sendNetwork"
             label="派单网元"
-            width="100"
           />
           <el-table-column
-            prop="taskid"
+            prop="taskNumber"
             label="任务单编号/消息ID"
             show-overflow-tooltip
           />
           <el-table-column
-            prop="sendTime"
+            prop="startTime"
             label="派单时间"
-            width="160"
+            width="170"
           />
           <el-table-column
-            prop="status"
+            prop="linkStatus"
             label="处理环节状态"
             width="110"
           />
           <el-table-column
-            prop="finishTime"
+            prop="endTime"
             label="任务完成时间"
-            width="160"
+            width="170"
           />
           <el-table-column
-            prop="makeTIme"
+            prop="makeTime"
             label="该网元制作时长(工作日时长)"
-            width="220"
+            width="210"
           />
           <el-table-column
             prop="operator"
@@ -174,8 +173,8 @@ import bottomRight from '@/views/components/quarter-circle/bottom-right.vue'
 import TopLeft from '@/views/components/quarter-circle/top-left.vue'
 import BottomLeft from '@/views/components/quarter-circle/bottom-left.vue'
 import Countdown from '@/views/components/countdown/index.vue'
-import result from '@/views/result.json'
-import { getFlow, getMainDetail, getLinkDetailByApplyId } from '@/api/table'
+import { getMainDetail, getLinkDetailByApplyId } from '@/api/table'
+import Cookies from 'js-cookie'
 
 export default {
   name: 'Index',
@@ -206,59 +205,20 @@ export default {
       dialogVisible: false,
       netTitle: '',
       spread: false, // 展开收起
-      deadline: Date.now() + 1000 * 60 * 39, // Date.now() + 1000 * 60 * 60 * 8
+      deadline: Date.now() - 1000 * 60 * 39, // Date.now() + 1000 * 60 * 60 * 8
       taskTableData: [
-        {
-          taskNumber: 'JSJ-19002834-PCC',
-          taskStatus: '自动执行'
-        },
-        {
-          taskNumber: 'JSJ-19002834-PCC',
-          taskStatus: '人工下发'
-        },
-        {
-          taskNumber: 'JSJ-19002834-PCC',
-          taskStatus: '人工下发'
-        },
-        {
-          taskNumber: 'JSJ-19002834-PCC',
-          taskStatus: '人工下发'
-        },
-        {
-          taskNumber: 'JSJ-19002834-PCC',
-          taskStatus: '人工下发'
-        }
+        // {
+        //   taskNumber: 'JSJ-19002834-PCC',
+        //   taskStatus: '人工下发'
+        // }
       ],
       taskSendProvinceTableData: [
-        {
-          netElement: '传统DNS',
-          dispatchStatus: '归档'
-        },
-        {
-          netElement: '传统MME',
-          dispatchStatus: '制作中'
-        }
+        // {
+        //   netElement: '传统MME',
+        //   dispatchStatus: '制作中'
+        // }
       ],
-      netElTableData: [
-        {
-          netEl: '广东(传统)',
-          taskid: '00215566562552245556666',
-          sendTime: '2018-04-12 20:46:11',
-          status: '下发成功',
-          finishTime: '2018-04-12 20:46:11',
-          makeTime: '制作中',
-          operator: '张三'
-        },
-        {
-          netEl: '广东(传统)',
-          taskid: '00215566562552245556666',
-          sendTime: '2018-04-12 20:46:11',
-          status: '下发成功',
-          finishTime: '2018-04-12 20:46:11',
-          makeTime: '制作中',
-          operator: '张三'
-        }
-      ],
+      netElTableData: [],
       activities: [
         {
           content: 'BOSS同步业编时间',
@@ -291,18 +251,21 @@ export default {
       group: []
     }
   },
+  created() {
+    Cookies.set('SESSION', this.$route.query.sid)
+  },
   mounted() {
     getMainDetail({ applyId: this.$route.query.applyId || '' }).then(res => {
-      console.log(res.data)
       this.applyOrder = res.data.applyOrder
-      this.activities[0].timestamp = this.applyOrder.bBossTime
+      this.activities[0].timestamp = this.applyOrder.bbossTime
       this.activities[1].timestamp = this.applyOrder.applyTime
       this.activities[2].timestamp = this.applyOrder.planFinishTime
       this.activities[3].timestamp = this.applyOrder.finishedTime
       this.activities.forEach(item => { if (item.timestamp) item.type = 'primary' })
-      this.deadline = Date.parse(new Date(this.applyOrder.planFinishTime || 0)) // 计时器要求输入时间戳
+      this.deadline = Date.parse(new Date(this.applyOrder.planFinishTime || 0)) // 计时器要求输入时间戳// 计时器要求输入时间戳
+      this.$refs.countdown.countdown(this.deadline)
       this.taskTableData = res.data.taskOrder
-      this.netElTableData = res.data.dispatchOrderCompany
+      this.taskSendProvinceTableData = res.data.dispatchOrderCompany
     })
     getLinkDetailByApplyId({ applyId: this.$route.query.applyId || '' }).then(res => {
       console.log(res.data)
@@ -363,26 +326,37 @@ export default {
     // })
   },
   methods: {
-    cellClick(row, column, cell, event) {
+    back() {
+      // this.$router.go(-1)
+      console.log('待定：返回调用模块...')
+    },
+    showDialog(row, column, cell, event) {
       console.log(row, column, cell, event)
       this.dialogVisible = !this.dialogVisible
-      this.netTitle = row.netEl
+      console.log(row.listSendData)
+      this.netTitle = row.listSendData[0].linkTitle
+      this.netElTableData = row.listSendData[0].linkRecordData
     },
     linkClick(row, column, cell, event) {
       console.log(row, column, cell, event)
-      this.$router.push({ path: '/monitor/task' })
+      this.$router.push({ path: '/monitor/task', query: { taskId: row.taskId }})
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+.scrollbar-fit{
+  @media screen and (max-width: 1320px){
+    height: calc(100vh - 17px);
+  }
+  height: 100vh;
+}
 .left-container{
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: calc(100vh - 17px);
   overflow: auto;
 }
 .timeline-container {
